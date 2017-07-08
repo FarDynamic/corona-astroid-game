@@ -1,2 +1,0 @@
-# corona-astroid-game
-tutorial
