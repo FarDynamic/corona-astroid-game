@@ -116,3 +116,45 @@ local function createAsteroid()
 
     newAsteroid:applyTorque( math.random( -6,6 ))
 end
+
+local function fireLaser()
+    local newLaser = display.newImageRect(mainGroup, objectSheet, 5, 14, 40)
+    physics.addBody( newLaser, "dynamic", { isSensor=true } )
+    newLaser.isBullet = true
+    newLaser.myName = "laser"
+
+    newLaser.x = ship.x
+    newLaser.y = ship.y
+    newLaser:toBack()
+
+    transition.to( newLaser, { y= -40, time=500,
+                             onComplete = function() display.remove( newLaser ) end 
+                             })
+end
+
+ship:addEventListener( "tap", fireLaser )
+
+local function dragShip( event )
+  local ship =  event.target
+  local phase = event.phase
+
+  if ( "began" ==  phase ) then 
+    -- set focus on the ship so nothing else can receive touch event.
+    display.currentStage:setFocus( ship )
+    -- Store intial offset of position
+    ship.touchOffSetX = event.x - ship.x
+
+  elseif  ( "moved" == phase ) then
+    -- move the ship to the new touch position
+    ship.x = event.x - ship.touchOffSetX 
+
+  elseif( "ended" == phase or "cancelled" == phase ) then
+    -- Release the focus from the ship
+    display.currentStage:setFocus( nil )
+  end
+
+  return true --prevent touch event from hitting other objects
+end
+
+ship:addEventListener( "touch", dragShip )
+
